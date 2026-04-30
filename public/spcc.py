@@ -1,4 +1,5 @@
-# Program 1: Generate Symbol Table and Literal Table
+# 1) Write a program to implement two- pass assembler.
+# [Generate the symbol table, literal table from ALP code]
 
 # Static ALP code
 alp = [
@@ -56,7 +57,8 @@ for lit, val in literal_table.items():
     print(lit, "->", val)
 
 
-# Program 2: Base Table and LC
+# 2) Write a program to implement two –pass assembler.
+# [Generate the base table, location counter (LC)]
 
 alp = [
     "START 200",
@@ -117,7 +119,8 @@ for line, loc in lc_table:
     print(loc, ":", line)
 
 
-# Program 3: MOT, POT and LC
+# 3) Write a program to implement 2-pass assembler.
+# [Display MOT and POT, LC contents from ALP code]
 
 alp = [
     "START 100",
@@ -190,6 +193,9 @@ print("\nLC Contents:")
 for loc, line in lc_table:
     print(loc, ":", line)
 
+# 4) Write a program to implement single macro processor.
+# [Display macro name table, macro definition table, Argument List Array]
+
 alp = [
     "MACRO",
     "INCR &ARG1",
@@ -257,7 +263,8 @@ for macro, ala in ala_table.items():
     print(macro, ":", ala)
 
 
-# Program 5: Macro Expansion using predefined tables
+# 5) Write a program to implement single pass macro processor.
+# [Display macro expansion, predefine MDT and MNT tables]
 
 # Predefined tables
 MNT = {
@@ -310,7 +317,8 @@ for line in alp:
     else:
         print(line)
 
-# Program 6: Identify Macro and Expand
+# 6) Write a program to implement single pass macro processor.
+# [Identify macros and perform macro expansion]
 
 alp = [
     "MACRO",
@@ -387,7 +395,7 @@ while i < len(alp):
 
     i += 1
 
-# Program 7: Detect Left Recursion
+# 7) Write a program to find the Left recursion of given grammar.
 
 # Static grammar (Dictionary format)
 grammar = {
@@ -413,7 +421,8 @@ for non_terminal in grammar:
     if not left_recursive:
         print(f"{non_terminal} has NO left recursion")
 
-# Program 8: Lexical Analyzer (Keywords, Identifiers, Symbols)
+# 8) Write a program to design handwritten lexical analyzer using programming language.
+# (Display keyword, identifier, symbols]
 
 import re
 
@@ -449,7 +458,8 @@ print("Keywords:", found_keywords)
 print("Identifiers:", identifiers)
 print("Symbols:", found_symbols)
 
-# Program 9: Lexical Analyzer (Numbers, Identifiers, Preprocessor Directives)
+# 10) Write a program to implement following code optimization techniques. 1) Algebraic
+# simplification 2) Common sub expression elimination. 3) Copy Propagation 4) Constant Folding
 
 import re
 
@@ -494,7 +504,9 @@ for p in preprocessor:
 print("\nIdentifiers:", identifiers)
 print("Numbers:", numbers)
 
-# Program 11: Code Optimization Techniques
+# 11) Write a program to implement following code optimization techniques. 1) Algebraic
+# simplification 2) Common sub expression elimination. 3) Copy Propagation 4) Constant
+# Folding
 
 expressions = [
     "a = b + 0",
@@ -542,7 +554,7 @@ print("Optimized Code:\n")
 for line in optimized:
     print(line)
 
-# Program 12: 3-Address Code (Triples)
+# 12) Write a program to implement Intermediate Code Generator using 3-Address code using triples.
 
 expression = "a = b + c * d"
 
@@ -595,7 +607,97 @@ print("Triples Representation:\n")
 for t in triples:
     print(t)
 
-# Program 14: Lexical Analyzer (Remove Comments, Identify Tokens)
+# 13) Write a program to implement Intermediate Code Generator using 3-Address code using
+# quadruples &amp; triples.
+
+class TACGenerator:
+    def __init__(self):
+        self.temp_count = 1
+        self.quadruples = []
+        self.triples = []
+
+    def new_temp(self):
+        temp = f"t{self.temp_count}"
+        self.temp_count += 1
+        return temp
+
+    def generate(self, expr):
+        # assuming input like: a=b+c*d
+        lhs, rhs = expr.split('=')
+        lhs = lhs.strip()
+        rhs = rhs.strip()
+
+        tokens = list(rhs)
+
+        stack = []
+        operators = []
+
+        def precedence(op):
+            if op in ('*', '/'):
+                return 2
+            if op in ('+', '-'):
+                return 1
+            return 0
+
+        def apply_op():
+            op = operators.pop()
+            b = stack.pop()
+            a = stack.pop()
+
+            temp = self.new_temp()
+
+            # Quadruple → (op, arg1, arg2, result)
+            self.quadruples.append((op, a, b, temp))
+
+            # Triple → (op, arg1, arg2)
+            self.triples.append((op, a, b))
+
+            stack.append(temp)
+
+        i = 0
+        while i < len(tokens):
+            token = tokens[i]
+
+            if token.isalnum():
+                stack.append(token)
+
+            elif token in "+-*/":
+                while (operators and 
+                       precedence(operators[-1]) >= precedence(token)):
+                    apply_op()
+                operators.append(token)
+
+            i += 1
+
+        while operators:
+            apply_op()
+
+        # Final assignment
+        result = stack.pop()
+        self.quadruples.append(("=", result, "-", lhs))
+        self.triples.append(("=", result, lhs))
+
+    def display(self):
+        print("\nQuadruples:")
+        print("Index\tOp\tArg1\tArg2\tResult")
+        for i, q in enumerate(self.quadruples):
+            print(f"{i}\t{q[0]}\t{q[1]}\t{q[2]}\t{q[3]}")
+
+        print("\nTriples:")
+        print("Index\tOp\tArg1\tArg2")
+        for i, t in enumerate(self.triples):
+            print(f"{i}\t{t[0]}\t{t[1]}\t{t[2] if len(t)>2 else '-'}")
+
+
+# -------- MAIN --------
+expr = input("Enter expression (e.g., a=b+c*d): ")
+
+tac = TACGenerator()
+tac.generate(expr)
+tac.display()
+
+# 14) Write a program to design handwritten lexical analyzer using programming language.
+# (Display identifier, symbols and remove comment from program]
 
 import re
 
